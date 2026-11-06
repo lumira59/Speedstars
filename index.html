@@ -15,18 +15,21 @@
   .tab-btn.active { background: #333; color: #fff; border-color: #333; }
   #event-tabs .tab-btn { font-size: 13px; padding: 6px 12px; }
   .warning { color: #d93025; font-weight: bold; text-align: center; margin-bottom: 15px; display: none; }
-  table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-  th, td { padding: 12px 8px; border-bottom: 1px solid #eaeaea; text-align: left; white-space: nowrap; }
+  
+  /* ★スマホでも絶対に潰れないように「最低幅(650px)」と「改行禁止(!important)」を強制 */
+  table { width: 100%; min-width: 650px; border-collapse: collapse; margin-bottom: 30px; }
+  th, td { padding: 12px 8px; border-bottom: 1px solid #eaeaea; text-align: left; white-space: nowrap !important; }
   th { background-color: #f8f9fa; color: #555; }
   .center { text-align: center; }
-  .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  
   footer { text-align: center; padding: 30px 0 10px; color: #cccccc; font-size: 12px; }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>Speedstars Rankings</h1>
+  <h1>Speedstars Rankings (テスト)</h1>
 
   <div class="tabs" id="region-tabs">
     <button class="tab-btn active" onclick="changeRegion('japan')">日本ランキング</button>

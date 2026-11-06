@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Speedstars Rankings</title>
 
-<!-- ★追加：すべての端末で絵文字を綺麗に表示するツール -->
+<!-- すべての端末で絵文字を綺麗に表示するツール -->
 <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
 
 <style>
@@ -29,13 +29,13 @@
   
   .warning { color: #d93025; font-weight: bold; text-align: center; margin-bottom: 15px; display: none; }
   
-  /* ★修正：表全体の設定。white-space: nowrap; を追加して改行を防ぎます */
+  /* 表全体の設定。white-space: nowrap; を追加して文字の潰れ・改行を防ぐ */
   table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
   th, td { padding: 12px 8px; border-bottom: 1px solid #eaeaea; text-align: left; white-space: nowrap; }
   th { background-color: #f8f9fa; color: #555; }
   .center { text-align: center; }
 
-  /* ★追加：スマホで横スクロールさせるための枠 */
+  /* スマホで横スクロールさせるための枠 */
   .table-wrapper {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
@@ -64,7 +64,7 @@
 
   <div id="loading" style="text-align:center; padding:20px;">データを読み込み中...</div>
 
-<!-- ★追加：表を囲むdivの開始 -->
+  <!-- 横スクロール用のdivで表を囲む -->
   <div class="table-wrapper">
     <table id="ranking-table" style="display:none;">
       <thead>
@@ -82,7 +82,6 @@
       </tbody>
     </table>
   </div>
-  <!-- ★追加：表を囲むdivの終了 -->
 
   <div id="disqus_thread" style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; text-align: center; color: #888;">
     ※ここにDisqusなどのコメント機能が設置されます
@@ -170,7 +169,7 @@
       tbody.appendChild(tr);
     });
 
-    // ★追加：表を描画した後に、文字の絵文字を綺麗な画像に変換する処理
+    // 表を描画した後に、文字の絵文字を綺麗な画像に変換する処理
     twemoji.parse(document.getElementById('ranking-body'));
   }
 

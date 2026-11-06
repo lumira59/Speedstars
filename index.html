@@ -11,7 +11,7 @@
 <style>
   body { font-family: sans-serif; background-color: #f7f9fa; color: #333; margin: 0; padding: 20px; }
   
-  /* ★追加：絵文字画像のサイズを文字の大きさに合わせる */
+  /* 絵文字画像のサイズを文字の大きさに合わせる */
   img.emoji {
     height: 1.2em;
     width: 1.2em;
@@ -29,10 +29,17 @@
   
   .warning { color: #d93025; font-weight: bold; text-align: center; margin-bottom: 15px; display: none; }
   
+  /* ★修正：表全体の設定。white-space: nowrap; を追加して改行を防ぎます */
   table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-  th, td { padding: 12px 8px; border-bottom: 1px solid #eaeaea; text-align: left; }
+  th, td { padding: 12px 8px; border-bottom: 1px solid #eaeaea; text-align: left; white-space: nowrap; }
   th { background-color: #f8f9fa; color: #555; }
   .center { text-align: center; }
+
+  /* ★追加：スマホで横スクロールさせるための枠 */
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
   
   footer { text-align: center; padding: 30px 0 10px; color: #cccccc; font-size: 12px; }
 </style>
@@ -57,21 +64,25 @@
 
   <div id="loading" style="text-align:center; padding:20px;">データを読み込み中...</div>
 
-  <table id="ranking-table" style="display:none;">
-    <thead>
-      <tr id="table-header">
-        <th>順位</th>
-        <th class="center"></th>
-        <th>プレイヤー</th>
-        <th>記録</th>
-        <th id="col-date">日付</th>
-        <th>備考</th>
-      </tr>
-    </thead>
-    <tbody id="ranking-body">
-      <!-- スプレッドシートのデータがここに表示されます -->
-    </tbody>
-  </table>
+<!-- ★追加：表を囲むdivの開始 -->
+  <div class="table-wrapper">
+    <table id="ranking-table" style="display:none;">
+      <thead>
+        <tr id="table-header">
+          <th>順位</th>
+          <th class="center"></th>
+          <th>プレイヤー</th>
+          <th>記録</th>
+          <th id="col-date">日付</th>
+          <th>備考</th>
+        </tr>
+      </thead>
+      <tbody id="ranking-body">
+        <!-- スプレッドシートのデータがここに表示されます -->
+      </tbody>
+    </table>
+  </div>
+  <!-- ★追加：表を囲むdivの終了 -->
 
   <div id="disqus_thread" style="margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; text-align: center; color: #888;">
     ※ここにDisqusなどのコメント機能が設置されます

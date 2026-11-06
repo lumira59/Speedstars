@@ -4,43 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Speedstars Rankings</title>
-
-<!-- すべての端末で絵文字を綺麗に表示するツール -->
 <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
-
 <style>
   body { font-family: sans-serif; background-color: #f7f9fa; color: #333; margin: 0; padding: 20px; }
-  
-  /* 絵文字画像のサイズを文字の大きさに合わせる */
-  img.emoji {
-    height: 1.2em;
-    width: 1.2em;
-    margin: 0 .05em 0 .1em;
-    vertical-align: -0.2em;
-  }
-
+  img.emoji { height: 1.2em; width: 1.2em; margin: 0 .05em 0 .1em; vertical-align: -0.2em; }
   .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
   h1 { text-align: center; margin-bottom: 20px; font-size: 24px; }
-  
   .tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 15px; }
   .tab-btn { padding: 8px 16px; border: 1px solid #ddd; background: #fff; cursor: pointer; border-radius: 4px; }
   .tab-btn.active { background: #333; color: #fff; border-color: #333; }
   #event-tabs .tab-btn { font-size: 13px; padding: 6px 12px; }
-  
   .warning { color: #d93025; font-weight: bold; text-align: center; margin-bottom: 15px; display: none; }
-  
-  /* 表全体の設定。white-space: nowrap; を追加して文字の潰れ・改行を防ぐ */
   table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
   th, td { padding: 12px 8px; border-bottom: 1px solid #eaeaea; text-align: left; white-space: nowrap; }
   th { background-color: #f8f9fa; color: #555; }
   .center { text-align: center; }
-
-  /* スマホで横スクロールさせるための枠 */
-  .table-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  
+  .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   footer { text-align: center; padding: 30px 0 10px; color: #cccccc; font-size: 12px; }
 </style>
 </head>
@@ -53,18 +32,10 @@
     <button class="tab-btn active" onclick="changeRegion('japan')">日本ランキング</button>
     <button class="tab-btn" onclick="changeRegion('world')">世界ランキング</button>
   </div>
-
-  <div class="tabs" id="event-tabs">
-    <!-- JSで指定順に生成されます -->
-  </div>
-
-  <div id="warning-msg" class="warning">
-    ※これは計算値であり、実測値とは異なる場合があります
-  </div>
-
+  <div class="tabs" id="event-tabs"></div>
+  <div id="warning-msg" class="warning">※これは計算値であり、実測値とは異なる場合があります</div>
   <div id="loading" style="text-align:center; padding:20px;">データを読み込み中...</div>
 
-  <!-- 横スクロール用のdivで表を囲む -->
   <div class="table-wrapper">
     <table id="ranking-table" style="display:none;">
       <thead>
@@ -77,13 +48,15 @@
           <th>備考</th>
         </tr>
       </thead>
-      <tbody id="ranking-body">
-        <!-- スプレッドシートのデータがここに表示されます -->
-      </tbody>
+      <tbody id="ranking-body"></tbody>
     </table>
   </div>
 
- <div id="disqus_thread"></div>
+
+  <!-- ========================================================= -->
+  <!-- ▼▼▼ 【1】ここから下に、Disqusのコードを貼り付けます ▼▼▼ -->
+  <!-- ========================================================= -->
+<div id="disqus_thread"></div>
 <script>
     /**
     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
@@ -101,7 +74,14 @@
     (d.head || d.body).appendChild(s);
     })();
 </script>
-<noscript>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  
+
+  <!-- ========================================================= -->
+  <!-- ▲▲▲ Disqusのコードはここまで ▲▲▲ -->
+  <!-- ========================================================= -->
+
+
 </div>
 
 <footer>
@@ -109,18 +89,16 @@
 </footer>
 
 <script>
-  // ★ここにGASのWebアプリURLを貼り付けます（忘れずに書き換えてください）
-  const API_URL = "https://script.google.com/macros/s/AKfycbxM64Rv7y4l1PZv6G9wVSrLIbXOX5L7Dw0_34xb4EoaawdUvNnZw4L22wWRdzpxm4rRZg/exec";
+  // =========================================================
+  // ▼▼▼ 【2】ここの "https://script.google.com/macros/s/AKfycbxM64Rv7y4l1PZv6G9wVSrLIbXOX5L7Dw0_34xb4EoaawdUvNnZw4L22wWRdzpxm4rRZg/exec" をGASのURLに変更します ▼▼▼
+  // =========================================================
+  const API_URL = "YOUR_GAS_URL_HERE";
 
+  // --- これより下は絶対に書き換えないでください ---
   let allData = { japan: [], world: [] };
   let currentRegion = 'japan';
   let currentEvent = '100m';
-
-  const eventList = [
-    "100m", "200m", "400m", "60m", "150m", "300m", 
-    "800m", "40yard", "110mh", "400mh", "60mh", 
-    "4×100m", "Medley", "Total Score"
-  ];
+  const eventList = ["100m", "200m", "400m", "60m", "150m", "300m", "800m", "40yard", "110mh", "400mh", "60mh", "4×100m", "Medley", "Total Score"];
 
   function initTabs() {
     const eventTabs = document.getElementById('event-tabs');
@@ -154,7 +132,6 @@
     const warningMsg = document.getElementById('warning-msg');
     const colDate = document.getElementById('col-date');
     tbody.innerHTML = '';
-
     if (currentEvent === 'Total Score') {
       warningMsg.style.display = 'block';
       colDate.style.display = 'none';
@@ -162,30 +139,16 @@
       warningMsg.style.display = 'none';
       colDate.style.display = 'table-cell';
     }
-
     const dataList = allData[currentRegion] || [];
     const filtered = dataList.filter(row => row['種目'] === currentEvent);
-
     filtered.forEach(row => {
       const tr = document.createElement('tr');
-      
-      let html = `
-        <td>${row['順位'] || ''}</td>
-        <td class="center">${row['国旗(絵文字)'] || ''}</td>
-        <td>${row['プレイヤー'] || ''}</td>
-        <td>${row['記録'] || ''}</td>
-      `;
-
-      if (currentEvent !== 'Total Score') {
-        html += `<td>${row['日付'] || ''}</td>`;
-      }
-
+      let html = `<td>${row['順位'] || ''}</td><td class="center">${row['国旗(絵文字)'] || ''}</td><td>${row['プレイヤー'] || ''}</td><td>${row['記録'] || ''}</td>`;
+      if (currentEvent !== 'Total Score') { html += `<td>${row['日付'] || ''}</td>`; }
       html += `<td>${row['備考'] || ''}</td>`;
       tr.innerHTML = html;
       tbody.appendChild(tr);
     });
-
-    // 表を描画した後に、文字の絵文字を綺麗な画像に変換する処理
     twemoji.parse(document.getElementById('ranking-body'));
   }
 

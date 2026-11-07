@@ -9,28 +9,30 @@
 <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
 
 <style>
-  body { font-family: sans-serif; background-color: #f7f9fa; color: #333; margin: 0; padding: 20px; }
-  img.emoji { height: 1.2em; width: 1.2em; margin: 0 .05em 0 .1em; vertical-align: -0.2em; }
-  .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-  h1 { text-align: center; margin-bottom: 20px; font-size: 24px; }
-  .tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 15px; }
-  .tab-btn { padding: 8px 16px; border: 1px solid #ddd; background: #fff; cursor: pointer; border-radius: 4px; }
+  /* 画面の端の余白を削って、スマホの画面を限界まで広く使います */
+  body { font-family: sans-serif; background-color: #f7f9fa; color: #333; margin: 0; padding: 5px; }
+  img.emoji { height: 1.1em; width: 1.1em; margin: 0 .05em 0 .1em; vertical-align: -0.15em; }
+  .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  h1 { text-align: center; margin-bottom: 15px; font-size: 22px; }
+  .tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 15px; }
+  .tab-btn { padding: 8px 12px; border: 1px solid #ddd; background: #fff; cursor: pointer; border-radius: 4px; font-size: 13px; }
   .tab-btn.active { background: #333; color: #fff; border-color: #333; }
-  #event-tabs .tab-btn { font-size: 13px; padding: 6px 12px; }
-  .warning { color: #d93025; font-weight: bold; text-align: center; margin-bottom: 15px; display: none; }
+  #event-tabs .tab-btn { font-size: 12px; padding: 6px 10px; }
+  .warning { color: #d93025; font-weight: bold; text-align: center; margin-bottom: 15px; display: none; font-size: 12px; }
   
-  /* ★ すべての改行を禁止し、横スクロールで綺麗に見せる設定 */
+  /* ★ 改行禁止を維持しつつ、文字サイズとセルの余白を限界まで詰めて「日付」までを画面に収める */
   table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
   th, td { 
-    padding: 12px 8px; 
+    padding: 10px 4px; /* 左右の余白をギュッと詰める */
     border-bottom: 1px solid #eaeaea; 
     text-align: left; 
     white-space: nowrap !important; /* 絶対に改行させない */
+    font-size: 13px; /* スマホでも日付まで収まるように全体の文字を少しだけ小さく */
   }
   th { background-color: #f8f9fa; color: #555; }
   .center { text-align: center; }
   
-  /* 横スクロール用の枠 */
+  /* 備考だけがはみ出して横にスライドできるようにする枠 */
   .table-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
   
   footer { text-align: center; padding: 30px 0 10px; color: #cccccc; font-size: 12px; }
@@ -76,14 +78,12 @@
 </footer>
 
 <script>
-  // ★ここの "YOUR_GAS_URL_HERE" をご自身のGASのURLに書き換えてください
+  // ★ここの "YOUR_GAS_URL_HERE" を忘れずにご自身のGASのURLに書き換えてください
   const API_URL = "https://script.google.com/macros/s/AKfycbxM64Rv7y4l1PZv6G9wVSrLIbXOX5L7Dw0_34xb4EoaawdUvNnZw4L22wWRdzpxm4rRZg/exec";
 
   let allData = { japan: [], world: [] };
   let currentRegion = 'japan';
   let currentEvent = '100m';
-  
-  // 種目リストを仕様書通りに厳守して生成
   const eventList = ["100m", "200m", "400m", "60m", "150m", "300m", "800m", "40yard", "110mh", "400mh", "60mh", "4×100m", "Medley", "Total Score"];
 
   function initTabs() {

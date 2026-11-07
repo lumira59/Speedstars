@@ -1,42 +1,178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Speedstars Rankings</title>
+
+<!-- すべての端末で絵文字を綺麗に表示するツール -->
+<script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js" crossorigin="anonymous"></script>
+
 <style>
-  /* 画面全体の余白を少し減らして、スマホの画面を広く使います */
+  /* 画面全体の余白を減らしてスマホの画面を広く使う */
   body { font-family: sans-serif; background-color: #f7f9fa; color: #333; margin: 0; padding: 10px; }
   img.emoji { height: 1.2em; width: 1.2em; margin: 0 .05em 0 .1em; vertical-align: -0.2em; }
   .container { max-width: 900px; margin: 0 auto; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
   h1 { text-align: center; margin-bottom: 15px; font-size: 22px; }
+  
   .tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 15px; }
   .tab-btn { padding: 8px 12px; border: 1px solid #ddd; background: #fff; cursor: pointer; border-radius: 4px; font-size: 13px; }
   .tab-btn.active { background: #333; color: #fff; border-color: #333; }
   #event-tabs .tab-btn { font-size: 12px; padding: 6px 10px; }
+  
   .warning { color: #d93025; font-weight: bold; text-align: center; margin-bottom: 15px; display: none; font-size: 12px; }
   
-  /* ★ スマホ画面に収めるための表設定 */
-  table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+  /* ★ スマホ画面に確実に収めるための表設定（列幅を固定） */
+  table { width: 100%; border-collapse: collapse; margin-bottom: 30px; table-layout: fixed; }
   th, td { 
-    padding: 10px 4px; /* スマホでも6項目すべて入るようにセルの余白を詰める */
+    padding: 10px 2px;
     border-bottom: 1px solid #eaeaea; 
     text-align: left; 
-    font-size: 13px; /* 画面に収まるように全体の文字を少し小さく */
-    overflow-wrap: anywhere; /* 長いプレイヤー名などは枠内で自然に改行させる */
+    font-size: 13px; 
+    overflow-wrap: break-word;
+    word-wrap: break-word;
   }
-  th { background-color: #f8f9fa; color: #555; white-space: nowrap; }
+  th { background-color: #f8f9fa; color: #555; }
   .center { text-align: center; }
-  
-  /* ★ 備考（一番右の列）の設定 */
-  th:last-child, td:last-child {
-    width: 25%; /* 備考に全体の25%の一定幅を持たせる */
-    min-width: 50px;
-    font-size: 11px; /* 備考は文字をさらに小さくして情報を詰め込む */
-    color: #666; /* 備考らしく少しグレーがかった色に */
-  }
 
-  /* 順位と記録の列は、なるべく改行させずに見栄えを保つ */
-  td:nth-child(1), td:nth-child(4) {
-    white-space: nowrap;
-  }
-  
-  /* 横スクロール強制を解除 */
+  /* 各列の幅をパーセンテージで指定 */
+  th:nth-child(1), td:nth-child(1) { width: 10%; } /* 順位 */
+  th:nth-child(2), td:nth-child(2) { width: 8%; }  /* 国旗 */
+  th:nth-child(3), td:nth-child(3) { width: 22%; } /* プレイヤー */
+  th:nth-child(4), td:nth-child(4) { width: 18%; } /* 記録 */
+  .col-date { width: 17%; } /* 日付（Total Scoreの時は非表示） */
+  th:last-child, td:last-child { width: 25%; font-size: 11px; color: #666; } /* 備考 */
+
   .table-wrapper { width: 100%; }
-  
   footer { text-align: center; padding: 30px 0 10px; color: #cccccc; font-size: 12px; }
 </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Speedstars Rankings</h1>
+
+  <div class="tabs" id="region-tabs">
+    <button class="tab-btn active" onclick="changeRegion('japan')">日本ランキング</button>
+    <button class="tab-btn" onclick="changeRegion('world')">世界ランキング</button>
+  </div>
+
+  <div class="tabs" id="event-tabs"></div>
+
+  <div id="warning-msg" class="warning">
+    ※これは計算値であり、実測値とは異なる場合があります
+  </div>
+
+  <div id="loading" style="text-align:center; padding:20px;">データを読み込み中...</div>
+
+  <div class="table-wrapper">
+    <table id="ranking-table" style="display:none;">
+      <thead>
+        <tr id="table-header">
+          <th>順位</th>
+          <th class="center"></th>
+          <th>プレイヤー</th>
+          <th>記録</th>
+          <th id="col-date" class="col-date">日付</th>
+          <th>備考</th>
+        </tr>
+      </thead>
+      <tbody id="ranking-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<footer>
+  TikTok @lumira59
+</footer>
+
+<script>
+  // ★ここの "YOUR_GAS_URL_HERE" をご自身のGASのURLに書き換えてください
+  const API_URL = "YOUR_GAS_URL_HERE";
+
+  let allData = { japan: [], world: [] };
+  let currentRegion = 'japan';
+  let currentEvent = '100m';
+  const eventList = ["100m", "200m", "400m", "60m", "150m", "300m", "800m", "40yard", "110mh", "400mh", "60mh", "4×100m", "Medley", "Total Score"];
+
+  function initTabs() {
+    const eventTabs = document.getElementById('event-tabs');
+    eventList.forEach(eventName => {
+      const btn = document.createElement('button');
+      btn.className = 'tab-btn' + (eventName === currentEvent ? ' active' : '');
+      btn.innerText = eventName;
+      btn.onclick = () => changeEvent(eventName);
+      eventTabs.appendChild(btn);
+    });
+  }
+
+  function changeRegion(region) {
+    currentRegion = region;
+    document.querySelectorAll('#region-tabs .tab-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.innerText.includes(region === 'japan' ? '日本' : '世界'));
+    });
+    renderTable();
+  }
+
+  function changeEvent(eventName) {
+    currentEvent = eventName;
+    document.querySelectorAll('#event-tabs .tab-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.innerText === eventName);
+    });
+    renderTable();
+  }
+
+  function renderTable() {
+    const tbody = document.getElementById('ranking-body');
+    const warningMsg = document.getElementById('warning-msg');
+    const colDate = document.getElementById('col-date');
+    tbody.innerHTML = '';
+
+    if (currentEvent === 'Total Score') {
+      warningMsg.style.display = 'block';
+      colDate.style.display = 'none';
+    } else {
+      warningMsg.style.display = 'none';
+      colDate.style.display = 'table-cell';
+    }
+
+    const dataList = allData[currentRegion] || [];
+    const filtered = dataList.filter(row => row['種目'] === currentEvent);
+
+    filtered.forEach(row => {
+      const tr = document.createElement('tr');
+      let html = `
+        <td>${row['順位'] || ''}</td>
+        <td class="center">${row['国旗(絵文字)'] || ''}</td>
+        <td>${row['プレイヤー'] || ''}</td>
+        <td>${row['記録'] || ''}</td>
+      `;
+      if (currentEvent !== 'Total Score') {
+        html += `<td class="col-date">${row['日付'] || ''}</td>`;
+      }
+      html += `<td>${row['備考'] || ''}</td>`;
+      tr.innerHTML = html;
+      tbody.appendChild(tr);
+    });
+
+    twemoji.parse(document.getElementById('ranking-body'));
+  }
+
+  async function loadData() {
+    try {
+      const response = await fetch(API_URL);
+      const json = await response.json();
+      allData = json;
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('ranking-table').style.display = 'table';
+      renderTable();
+    } catch (error) {
+      document.getElementById('loading').innerText = 'データの読み込みに失敗しました。URLや設定を確認してください。';
+    }
+  }
+
+  initTabs();
+  loadData();
+</script>
+</body>
+</html>
